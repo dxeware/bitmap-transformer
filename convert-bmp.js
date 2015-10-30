@@ -1,29 +1,27 @@
+"use strict";
 
-var debug = require('./debug');
+var debug = require('/Users/laurakuhner/source/javascript/debug.js');
 
-function transformInvertColors(buff) {
-  var offset = buff.readUIntLE(10, 4);
-  debug("offset = ", offset);
+function transformInvertColors(buff, imgOffset) {
 
-  for (var i = offset; i < buff.length; i++) {
+  for (var i = imgOffset; i < buff.length; i++) {
     buff[i] = 0xFF - buff[i];
   }
 
 }
 
-function processBMP(buff) {
+function convertBMP(buff) {
 
-  var newBuff = new Buffer(buff.length);
+  //Get the bmp image offset from header
+  var imgOffset = buff.readUIntLE(10, 4);
+  debug("image offset = " + imgOffset);
 
-  buff.copy(newBuff);
+  // Transform image by inverting colors
+  transformInvertColors(buff, imgOffset);
 
-  console.log("newBuff = " + newBuff.toString('hex', 38, 45));
+  debug("buff = " + buff.toString('hex', 38, 45));
 
-  transformInvertColors(newBuff);
-
-  console.log("newBuff = " + newBuff.toString('hex', 38, 45));
-
-  return newBuff;
+  return buff;
 }
 
-module.exports = processBMP;
+module.exports = convertBMP;

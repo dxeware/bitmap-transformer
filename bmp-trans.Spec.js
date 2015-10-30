@@ -1,12 +1,21 @@
+"use strict";
+
 var expect = require('chai').expect;
 var fs = require('fs');
 var convertBMP = require('./convert-bmp.js');
 
 
-
 describe('bmp transformer', function() {
-  var content = fs.readFileSync('./images/crayons.bmp');
-  var newContent = convertBMP(content);
+
+  var newContent;
+  var origFilename = './images/crayons.bmp';
+  var content = fs.readFileSync(origFilename);
+
+  var origContent = new Buffer(content.length);
+
+  content.copy(origContent);
+
+  newContent = convertBMP(content);
 
   // Offset to image -- stored in byte 10
   //based on https://en.wikipedia.org/wiki/BMP_file_format
@@ -15,7 +24,7 @@ describe('bmp transformer', function() {
   it('process BMP doesnt change header', function(done) {
 
     for (var i = 0; i < offset; i++) {
-      expect(content[i]).to.equal(newContent[i]);
+      expect(origContent[i]).to.equal(newContent[i]);
     }
 
     done();
@@ -25,7 +34,7 @@ describe('bmp transformer', function() {
   it('transform change image to invert colors (ie, 0xFF - orig pixel)', function(done) {
 
     for (var i = offset; i < content.length; i++) {
-      expect(newContent[i]).to.equal(0xFF - content[i]);
+      expect(newContent[i]).to.equal(0xFF - origContent[i]);
     }
 
     done();
@@ -34,7 +43,7 @@ describe('bmp transformer', function() {
 
   it('new Buffer is same length as orig Buffer', function(done) {
 
-      expect(newContent.length).to.equal(content.length);
+    expect(newContent.length).to.equal(origContent.length);
 
     done();
 
