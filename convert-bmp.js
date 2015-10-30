@@ -1,6 +1,6 @@
 "use strict";
 
-var debug = require('/Users/laurakuhner/source/javascript/debug.js');
+var debug = require('./debug');
 
 function transformInvertColors(buff, imgOffset) {
 
